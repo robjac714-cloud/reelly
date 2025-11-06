@@ -4,44 +4,51 @@
   <meta charset="UTF-8" />
   <title>Reelly Property Search — Cards + Images + Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Leaflet (الخريطة) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <style>
     :root{
-      --bg:#0b1020;
-      --card:#11162a;
-      --muted:#8b93a7;
-      --text:#eaf1ff;
-      --accent:#4f86ff;
-      --chip:#1b223d;
+      --bg:#0b1020; --card:#11162a; --muted:#8b93a7; --text:#eaf1ff;
+      --accent:#4f86ff; --chip:#1b223d;
     }
     *{box-sizing:border-box}
-    body { font-family: system-ui, Tahoma, Arial; margin: 24px; background:var(--bg); color:var(--text); }
-    a { color: var(--accent); }
-    h1 { margin:0 0 10px }
-    .wrap { max-width: 1200px; margin: 0 auto; }
-    form { background:var(--card); border:1px solid #1d2442; border-radius:16px; padding:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px 16px; }
-    label { font-size: 12px; color: var(--muted); display:block; margin-bottom:6px; }
-    input, select { width:100%; padding:10px 12px; border:1px solid #273057; background:#0f1530; color:var(--text); border-radius:10px; }
-    input::placeholder{color:#66709a}
-    .full { grid-column: 1 / -1; }
-    .actions { display:flex; gap:10px; margin-top:2px; }
-    button { padding: 10px 16px; border: 0; border-radius: 10px; cursor: pointer; background: var(--accent); color:#fff; font-weight:600; }
-    .ghost { background:#1d2442; color:#cfe1ff; }
-    .results { margin-top: 22px; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:18px; }
-    .card { border:1px solid #1d2442; background:linear-gradient(180deg, #111936, #0f1530); border-radius:16px; overflow:hidden; box-shadow: 0 4px 18px rgba(0,0,0,.25); display:flex; flex-direction:column; }
-    .thumb { width:100%; aspect-ratio: 16/10; object-fit: cover; background:#0c1127; }
-    .card-body{ padding:12px 14px; }
-    .title { font-weight:700; margin:0 0 6px; line-height:1.25 }
-    .meta { font-size:13px; color: var(--muted); display:flex; flex-wrap:wrap; gap:8px; }
-    .chip { background:var(--chip); border:1px solid #273057; padding:4px 8px; border-radius:999px; }
-    .cta { display:flex; gap:8px; margin-top:12px; }
-    .btn { flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px; border-radius:10px; border:1px solid #29335e; background:#162049; color:#dfe7ff; text-decoration:none; }
-    .btn[disabled]{opacity:.5; cursor:not-allowed}
-    .muted { color:var(--muted); font-size:12px; }
-    .panel { border:1px solid #1d2442; background:#0f1530; border-radius:12px; padding:10px; }
-    pre { background:#0a0f25; color:#d8e4ff; padding:12px; border-radius:10px; overflow:auto; }
-    .head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;}
-    .toggle { background:#1d2442; border:1px solid #273057; color:#dfe7ff; padding:8px 12px; border-radius:10px; cursor:pointer; }
+    body{ font-family:system-ui,Tahoma,Arial; margin:24px; background:var(--bg); color:var(--text) }
+    a{ color:var(--accent) }
+    h1{ margin:0 0 10px }
+    .wrap{ max-width:1200px; margin:0 auto }
+    form{ background:var(--card); border:1px solid #1d2442; border-radius:16px; padding:16px;
+          display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px 16px }
+    label{ font-size:12px; color:var(--muted); display:block; margin-bottom:6px }
+    input,select{ width:100%; padding:10px 12px; border:1px solid #273057; background:#0f1530; color:var(--text); border-radius:10px }
+    input::placeholder{ color:#66709a }
+    .full{ grid-column:1 / -1 }
+    .actions{ display:flex; gap:10px; margin-top:2px; flex-wrap:wrap }
+    button{ padding:10px 16px; border:0; border-radius:10px; cursor:pointer; background:var(--accent); color:#fff; font-weight:600 }
+    .ghost{ background:#1d2442; color:#cfe1ff }
+    .results{ margin-top:22px }
+    .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px }
+    .card{ border:1px solid #1d2442; background:linear-gradient(180deg,#111936,#0f1530); border-radius:16px; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,.25); display:flex; flex-direction:column }
+    .thumb{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#0c1127 }
+    .card-body{ padding:12px 14px }
+    .title{ font-weight:700; margin:0 0 6px; line-height:1.25 }
+    .meta{ font-size:13px; color:var(--muted); display:flex; flex-wrap:wrap; gap:8px }
+    .chip{ background:var(--chip); border:1px solid #273057; padding:4px 8px; border-radius:999px }
+    .cta{ display:flex; gap:8px; margin-top:12px }
+    .btn{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px; border-radius:10px; border:1px solid #29335e; background:#162049; color:#dfe7ff; text-decoration:none }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed }
+    .muted{ color:var(--muted); font-size:12px }
+    .panel{ border:1px solid #1d2442; background:#0f1530; border-radius:12px; padding:10px }
+    pre{ background:#0a0f25; color:#d8e4ff; padding:12px; border-radius:10px; overflow:auto }
+    .head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px }
+    .toggle{ background:#1d2442; border:1px solid #273057; color:#dfe7ff; padding:8px 12px; border-radius:10px; cursor:pointer }
+
+    /* نافذة الخريطة */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:50 }
+    .modal{ width:min(1100px,95vw); height:min(75vh,800px); background:#0f1530; border:1px solid #1d2442; border-radius:16px; overflow:hidden; display:flex; flex-direction:column }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #1d2442 }
+    #map{ flex:1; width:100% }
   </style>
 </head>
 <body>
@@ -100,6 +107,7 @@
         <button type="submit">بحث</button>
         <button type="button" id="quickFill" class="ghost">تجربة سريعة</button>
         <button type="reset" class="ghost">إفراغ</button>
+        <button type="button" id="regionMapSearch" class="ghost">خريطة المنطقة فقط</button>
       </div>
     </form>
 
@@ -118,19 +126,35 @@
     </div>
   </div>
 
+  <!-- نافذة الخريطة -->
+  <div class="modal-backdrop" id="mapModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="muted" id="mapTitle">خريطة المشاريع</div>
+        <button id="closeMap" class="ghost" style="padding:8px 12px">إغلاق</button>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <script>
     // ====== الإعدادات ======
     const API_BASE = "https://search-listings-production.up.railway.app/v1/properties";
-    const API_KEY = "reelly-80fd5f24-WLrF9bAxkGwYrUXFjrIyzNxRlzrB4kpH"; // ← استبدلها بمفتاحك
+    const API_KEY  = "reelly-80fd5f24-WLrF9bAxkGwYrUXFjrIyzNxRlzrB4kpH"; // ← استبدلها بمفتاحك
 
     const form = document.getElementById("searchForm");
     const cards = document.getElementById("cards");
     const jsonOut = document.getElementById("jsonOut");
     const summary = document.getElementById("summary");
     const debugEl = document.getElementById("debug");
-    const quickFillBtn = document.getElementById("quickFill");
-    const toggleRawBtn = document.getElementById("toggleRaw");
     const rawPanel = document.getElementById("rawPanel");
+
+    // سنحتفظ بآخر عناصر رجعت من البحث هنا:
+    let LAST_ITEMS = [];
 
     // ====== Helpers ======
     function objectFromForm(formEl) {
@@ -146,7 +170,7 @@
     }
     function safeText(v){ return (v===undefined || v===null) ? "" : String(v); }
 
-    // ==== إضافات جديدة لعرض الصور والإحداثيات ====
+    // JSON/صور
     function tryParseJSON(str) {
       if (typeof str !== "string") return null;
       const s = str.trim();
@@ -158,21 +182,15 @@
         && /^https?:\/\//i.test(u)
         && (/\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(u) || /image/.test(u));
     }
-
-    // ✅ يلتقط رابط الصورة من cover_image_url كسلسلة JSON أو URL مباشر
     function getImageUrl(it){
-      // حالة خاصة: cover_image_url كنص JSON يحتوي { url, path, ... }
       if (typeof it.cover_image_url === "string") {
         const parsed = tryParseJSON(it.cover_image_url);
         if (parsed && typeof parsed === "object") {
           if (parsed.url && isImageUrl(parsed.url)) return parsed.url;
-          if (parsed.path) return "https://api.reelly.io" + String(parsed.path); // احتياط لو رجع path فقط
+          if (parsed.path) return "https://api.reelly.io" + String(parsed.path);
         }
-        // أو قد تكون السلسلة أصلاً URL مباشر
         if (isImageUrl(it.cover_image_url)) return it.cover_image_url;
       }
-
-      // الاحتمالات الأخرى الشائعة
       const cands = [
         it.image_url, it.image, it.cover_image, it.thumbnail, it.thumb_url,
         it.photo, it.photo_url, it.picture, it.picture_url,
@@ -181,14 +199,11 @@
         it.photos?.[0]?.url, it.photos?.[0],
         it.media?.images?.[0]?.url, it.gallery?.[0]?.url,
       ].filter(Boolean);
-
-      for (const u of cands) {
-        if (typeof u === "string" && isImageUrl(u)) return u;
-      }
+      for (const u of cands) if (typeof u === "string" && isImageUrl(u)) return u;
       return "https://dummyimage.com/800x500/0d122c/ffffff&text=No+Image";
     }
 
-    // ✅ يفك "coordinates": "lat, lng" إلى كائن {lat,lng}
+    // إحداثيات
     function getCoords(it){
       if (typeof it.coordinates === "string") {
         const parts = it.coordinates.split(",").map(s => Number(s.trim()));
@@ -196,22 +211,20 @@
           return { lat: parts[0], lng: parts[1] };
         }
       }
-      // احتياط: مفاتيح أخرى إن وجدت
       const lat = Number(it.lat ?? it.latitude ?? it.location?.lat ?? it.coordinates?.lat ?? it.coord?.lat ?? it.geo?.lat);
       const lng = Number(it.lng ?? it.lon ?? it.longitude ?? it.location?.lng ?? it.coordinates?.lng ?? it.coord?.lng ?? it.geo?.lng);
       if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
       return null;
     }
-
     function mapLink({lat,lng}){ return `https://www.google.com/maps?q=${lat},${lng}`; }
 
+    // بطاقات
     function renderCards(items) {
       cards.innerHTML = "";
       if (!Array.isArray(items) || items.length === 0) {
         cards.innerHTML = "<div class='muted'>لا توجد نتائج.</div>";
         return;
       }
-
       items.forEach(it => {
         const title = safeText(it.title || it.name || it.project_name || it.property_name || "بدون اسم");
         const developer = safeText(it.developer_name || it.developer);
@@ -248,6 +261,7 @@
       });
     }
 
+    // بحث (GET) + حفظ النتائج في LAST_ITEMS
     async function runSearch(payload) {
       cards.innerHTML = "";
       jsonOut.textContent = "جاري التحميل...";
@@ -274,6 +288,8 @@
                     : Array.isArray(data.list) ? data.list
                     : [];
 
+        LAST_ITEMS = items; // ← نخزّن آخر نتيجة هنا
+
         const pagination = data.pagination || {};
         const count = items.length;
         const total = (typeof pagination.total === "number") ? pagination.total : "؟";
@@ -288,6 +304,52 @@
       }
     }
 
+    // ====== خريطة من JSON الحالي فقط ======
+    let MAP, MARKERS;
+    function openMapFromItems(items, title="خريطة المشاريع") {
+      const points = items.map(it=>{
+        const c = getCoords(it);
+        if (!c) return null;
+        return {
+          ...c,
+          title: safeText(it.name || it.title || "بدون اسم"),
+          area: safeText(it.area),
+          price: safeText(it.min_price ?? it.price),
+          currency: safeText(it.price_currency || it.currency || "")
+        };
+      }).filter(Boolean);
+
+      const mapModal = document.getElementById("mapModal");
+      const mapTitle = document.getElementById("mapTitle");
+      mapTitle.textContent = `${title} — ${points.length} عنصر${points.length!==1?"ًا":""}`;
+      mapModal.style.display = "flex";
+
+      setTimeout(()=>{
+        if (!MAP){
+          MAP = L.map('map', { zoomControl: true, attributionControl: false });
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ maxZoom:19 }).addTo(MAP);
+          MARKERS = L.layerGroup().addTo(MAP);
+        }
+        MARKERS.clearLayers();
+
+        if (points.length === 0) {
+          MAP.setView([25.2048, 55.2708], 10); // دبي افتراضيًا
+          return;
+        }
+
+        const bounds = [];
+        points.forEach(p=>{
+          const m = L.marker([p.lat, p.lng]).bindPopup(
+            `<b>${p.title}</b><br>${p.area || ""}${(p.area && p.price)?" • ":""}${p.price? (p.price+" "+p.currency):""}<br>
+             <a href="https://www.google.com/maps?q=${p.lat},${p.lng}" target="_blank">فتح في Google Maps</a>`
+          );
+          MARKERS.addLayer(m);
+          bounds.push([p.lat, p.lng]);
+        });
+        MAP.fitBounds(bounds, { padding:[30,30] });
+      },0);
+    }
+
     // أحداث
     document.getElementById("toggleRaw").addEventListener("click", ()=> {
       rawPanel.style.display = rawPanel.style.display === "none" ? "block" : "none";
@@ -299,15 +361,56 @@
       runSearch(payload);
     });
 
-    quickFillBtn.addEventListener("click", () => {
+    document.getElementById("quickFill").addEventListener("click", () => {
       form.reset();
       form.search_query.value = "Dubai";
       form.per_page.value = "12";
       runSearch({ search_query: "Dubai", per_page: "12" });
     });
 
-    // (ملاحظة: إذا استمر الخطأ 500 ببعض الفلاتر، بدّل runSearch إلى POST كما أعطيتك سابقًا)
+    // زر: خريطة المنطقة فقط (من JSON الحالي)
+  document.getElementById("regionMapSearch").addEventListener("click", ()=>{
+  if (!LAST_ITEMS.length) {
+    alert("أولاً اضغط (بحث) لنجلب النتائج، ثم اعرض الخريطة.");
+    return;
+  }
+
+  const needle = (document.querySelector('input[name="region"]')?.value || "").trim().toLowerCase();
+
+  // 🔎 نجمع كل الحقول المحتملة للنطاق: region / city / area_name / area / community / neighborhood
+  const filtered = LAST_ITEMS.filter(it=>{
+    const haystack = [
+      it.region, it.city, it.area_name, it.area, it.community, it.neighborhood
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    // إذا المستخدم ما كتب شيء، ما منفلتر
+    return needle ? haystack.includes(needle) : true;
+  });
+
+  // 🧭 خذ العناصر اللي فيها إحداثيات فقط
+  const withCoords = (filtered.length ? filtered : LAST_ITEMS)  // fallback إذا الفلترة أعطت 0
+    .filter(it => !!getCoords(it));
+
+  // عنوان مناسب يوضح هل استخدمنا الفلترة أم fallback
+  const title = needle
+    ? (filtered.length ? `خريطة مشاريع ${needle}` : "خريطة المشاريع (كل النتائج الحالية)")
+    : "خريطة المشاريع (النتائج الحالية)";
+
+  openMapFromItems(withCoords, title);
+
+  // ملخص على الصفحة
+  const regionLabel = needle ? ` في ${needle}` : "";
+  summary.textContent = `من النتائج الحالية: ${withCoords.length} مشروعًا مع إحداثيات${regionLabel}.`;
+});
+
+
+    // إغلاق الخريطة
+    document.getElementById("closeMap").addEventListener("click", ()=> {
+      document.getElementById("mapModal").style.display = "none";
+    });
+    document.getElementById("mapModal").addEventListener("click", (e)=> {
+      if (e.target.id === "mapModal") e.currentTarget.style.display = "none";
+    });
   </script>
 </body>
 </html>
-
