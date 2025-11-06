@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reelly Property Search — Cards + Images + Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#11162a;
+      --muted:#8b93a7;
+      --text:#eaf1ff;
+      --accent:#4f86ff;
+      --chip:#1b223d;
+    }
+    *{box-sizing:border-box}
+    body { font-family: system-ui, Tahoma, Arial; margin: 24px; background:var(--bg); color:var(--text); }
+    a { color: var(--accent); }
+    h1 { margin:0 0 10px }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    form { background:var(--card); border:1px solid #1d2442; border-radius:16px; padding:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px 16px; }
+    label { font-size: 12px; color: var(--muted); display:block; margin-bottom:6px; }
+    input, select { width:100%; padding:10px 12px; border:1px solid #273057; background:#0f1530; color:var(--text); border-radius:10px; }
+    input::placeholder{color:#66709a}
+    .full { grid-column: 1 / -1; }
+    .actions { display:flex; gap:10px; margin-top:2px; }
+    button { padding: 10px 16px; border: 0; border-radius: 10px; cursor: pointer; background: var(--accent); color:#fff; font-weight:600; }
+    .ghost { background:#1d2442; color:#cfe1ff; }
+    .results { margin-top: 22px; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:18px; }
+    .card { border:1px solid #1d2442; background:linear-gradient(180deg, #111936, #0f1530); border-radius:16px; overflow:hidden; box-shadow: 0 4px 18px rgba(0,0,0,.25); display:flex; flex-direction:column; }
+    .thumb { width:100%; aspect-ratio: 16/10; object-fit: cover; background:#0c1127; }
+    .card-body{ padding:12px 14px; }
+    .title { font-weight:700; margin:0 0 6px; line-height:1.25 }
+    .meta { font-size:13px; color: var(--muted); display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { background:var(--chip); border:1px solid #273057; padding:4px 8px; border-radius:999px; }
+    .cta { display:flex; gap:8px; margin-top:12px; }
+    .btn { flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px; border-radius:10px; border:1px solid #29335e; background:#162049; color:#dfe7ff; text-decoration:none; }
+    .btn[disabled]{opacity:.5; cursor:not-allowed}
+    .muted { color:var(--muted); font-size:12px; }
+    .panel { border:1px solid #1d2442; background:#0f1530; border-radius:12px; padding:10px; }
+    pre { background:#0a0f25; color:#d8e4ff; padding:12px; border-radius:10px; overflow:auto; }
+    .head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;}
+    .toggle { background:#1d2442; border:1px solid #273057; color:#dfe7ff; padding:8px 12px; border-radius:10px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head">
+      <h1>بحث العقارات (Reelly)</h1>
+      <button id="toggleRaw" class="toggle">إظهار/إخفاء JSON</button>
+    </div>
+    <p class="muted">املأ ما يلزم فقط. الحقول المتعددة اكتبها مفصولة بفواصل <code>1,2,3</code>.</p>
+
+    <!-- النموذج -->
+    <form id="searchForm">
+      <div><label>page</label><input type="number" name="page" min="1" placeholder="1"></div>
+      <div><label>per_page (حتى 50)</label><input type="number" name="per_page" min="1" max="50" placeholder="12"></div>
+
+      <div class="full"><label>search_query</label><input type="text" name="search_query" placeholder="Dubai / Marina / Emaar"></div>
+      <div class="full"><label>project_ids</label><input type="text" name="project_ids" placeholder="12,45,99"></div>
+
+      <div><label>country</label><input type="text" name="country" placeholder="UAE"></div>
+      <div><label>region</label><input type="text" name="region" placeholder="Dubai"></div>
+      <div><label>areas</label><input type="text" name="areas" placeholder="101,202"></div>
+
+      <div><label>status</label><input type="text" name="status" placeholder="active,upcoming"></div>
+      <div><label>sale_status</label><input type="text" name="sale_status" placeholder="available,sold_out"></div>
+      <div><label>unit_types</label><input type="text" name="unit_types" placeholder="apartment,villa,studio"></div>
+      <div><label>unit_bedrooms</label><input type="text" name="unit_bedrooms" placeholder="studio,1,2,3"></div>
+
+      <div><label>developer</label><input type="text" name="developer" placeholder="5,9"></div>
+      <div><label>is_partner_project</label>
+        <select name="is_partner_project"><option value="">—</option><option>true</option><option>false</option></select>
+      </div>
+      <div><label>post_handover</label>
+        <select name="post_handover"><option value="">—</option><option>true</option><option>false</option></select>
+      </div>
+      <div><label>has_escrow</label>
+        <select name="has_escrow"><option value="">—</option><option>true</option><option>false</option></select>
+      </div>
+
+      <div><label>unit_price_from</label><input type="number" step="any" name="unit_price_from" placeholder="200000"></div>
+      <div><label>unit_price_to</label><input type="number" step="any" name="unit_price_to" placeholder="1500000"></div>
+      <div><label>price_type</label>
+        <select name="price_type"><option value="">—</option><option>unit</option><option>area</option></select>
+      </div>
+      <div><label>unit_area_from</label><input type="number" step="any" name="unit_area_from" placeholder="500"></div>
+
+      <div class="full"><label>completion_date_ranges</label><input type="text" name="completion_date_ranges" placeholder="2025-2026,2027-2028"></div>
+      <div><label>preferred_currency</label><input type="text" name="preferred_currency" placeholder="AED"></div>
+      <div><label>preferred_area_unit</label><input type="text" name="preferred_area_unit" placeholder="sqft or sqm"></div>
+
+      <div><label>bbox_sw_lat</label><input type="number" step="any" name="bbox_sw_lat"></div>
+      <div><label>bbox_sw_lng</label><input type="number" step="any" name="bbox_sw_lng"></div>
+      <div><label>bbox_ne_lat</label><input type="number" step="any" name="bbox_ne_lat"></div>
+      <div><label>bbox_ne_lng</label><input type="number" step="any" name="bbox_ne_lng"></div>
+
+      <div class="full actions">
+        <button type="submit">بحث</button>
+        <button type="button" id="quickFill" class="ghost">تجربة سريعة</button>
+        <button type="reset" class="ghost">إفراغ</button>
+      </div>
+    </form>
+
+    <!-- النتائج -->
+    <div class="results">
+      <div class="panel" style="margin:14px 0;">
+        <div id="summary" class="muted">—</div>
+        <div id="debug" class="muted" style="margin-top:6px"></div>
+      </div>
+      <div id="cards" class="grid"></div>
+
+      <div id="rawPanel" class="panel" style="margin-top:16px; display:none;">
+        <h3 style="margin:4px 0 10px">Raw JSON</h3>
+        <pre id="jsonOut">—</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== الإعدادات ======
+    const API_BASE = "https://search-listings-production.up.railway.app/v1/properties";
+    const API_KEY = "reelly-80fd5f24-WLrF9bAxkGwYrUXFjrIyzNxRlzrB4kpH"; // ← استبدلها بمفتاحك
+
+    const form = document.getElementById("searchForm");
+    const cards = document.getElementById("cards");
+    const jsonOut = document.getElementById("jsonOut");
+    const summary = document.getElementById("summary");
+    const debugEl = document.getElementById("debug");
+    const quickFillBtn = document.getElementById("quickFill");
+    const toggleRawBtn = document.getElementById("toggleRaw");
+    const rawPanel = document.getElementById("rawPanel");
+
+    // ====== Helpers ======
+    function objectFromForm(formEl) {
+      const fd = new FormData(formEl);
+      const obj = {};
+      for (const [k, v] of fd.entries()) if (v.trim() !== "") obj[k] = v.trim();
+      return obj;
+    }
+    function buildParams(dataObj) {
+      const params = new URLSearchParams();
+      Object.entries(dataObj).forEach(([k,v]) => params.append(k,v));
+      return params.toString();
+    }
+    function safeText(v){ return (v===undefined || v===null) ? "" : String(v); }
+
+    // ==== إضافات جديدة لعرض الصور والإحداثيات ====
+    function tryParseJSON(str) {
+      if (typeof str !== "string") return null;
+      const s = str.trim();
+      if (!(s.startsWith("{") || s.startsWith("["))) return null;
+      try { return JSON.parse(s); } catch { return null; }
+    }
+    function isImageUrl(u) {
+      return typeof u === "string"
+        && /^https?:\/\//i.test(u)
+        && (/\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(u) || /image/.test(u));
+    }
+
+    // ✅ يلتقط رابط الصورة من cover_image_url كسلسلة JSON أو URL مباشر
+    function getImageUrl(it){
+      // حالة خاصة: cover_image_url كنص JSON يحتوي { url, path, ... }
+      if (typeof it.cover_image_url === "string") {
+        const parsed = tryParseJSON(it.cover_image_url);
+        if (parsed && typeof parsed === "object") {
+          if (parsed.url && isImageUrl(parsed.url)) return parsed.url;
+          if (parsed.path) return "https://api.reelly.io" + String(parsed.path); // احتياط لو رجع path فقط
+        }
+        // أو قد تكون السلسلة أصلاً URL مباشر
+        if (isImageUrl(it.cover_image_url)) return it.cover_image_url;
+      }
+
+      // الاحتمالات الأخرى الشائعة
+      const cands = [
+        it.image_url, it.image, it.cover_image, it.thumbnail, it.thumb_url,
+        it.photo, it.photo_url, it.picture, it.picture_url,
+        it.banner, it.banner_url,
+        it.images?.[0]?.url, it.images?.[0],
+        it.photos?.[0]?.url, it.photos?.[0],
+        it.media?.images?.[0]?.url, it.gallery?.[0]?.url,
+      ].filter(Boolean);
+
+      for (const u of cands) {
+        if (typeof u === "string" && isImageUrl(u)) return u;
+      }
+      return "https://dummyimage.com/800x500/0d122c/ffffff&text=No+Image";
+    }
+
+    // ✅ يفك "coordinates": "lat, lng" إلى كائن {lat,lng}
+    function getCoords(it){
+      if (typeof it.coordinates === "string") {
+        const parts = it.coordinates.split(",").map(s => Number(s.trim()));
+        if (parts.length >= 2 && parts.every(Number.isFinite)) {
+          return { lat: parts[0], lng: parts[1] };
+        }
+      }
+      // احتياط: مفاتيح أخرى إن وجدت
+      const lat = Number(it.lat ?? it.latitude ?? it.location?.lat ?? it.coordinates?.lat ?? it.coord?.lat ?? it.geo?.lat);
+      const lng = Number(it.lng ?? it.lon ?? it.longitude ?? it.location?.lng ?? it.coordinates?.lng ?? it.coord?.lng ?? it.geo?.lng);
+      if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+      return null;
+    }
+
+    function mapLink({lat,lng}){ return `https://www.google.com/maps?q=${lat},${lng}`; }
+
+    function renderCards(items) {
+      cards.innerHTML = "";
+      if (!Array.isArray(items) || items.length === 0) {
+        cards.innerHTML = "<div class='muted'>لا توجد نتائج.</div>";
+        return;
+      }
+
+      items.forEach(it => {
+        const title = safeText(it.title || it.name || it.project_name || it.property_name || "بدون اسم");
+        const developer = safeText(it.developer_name || it.developer);
+        const area = safeText(it.area || it.unit_area || it.size);
+        const bedrooms = safeText(it.bedrooms || it.unit_bedrooms);
+        const price = safeText(it.price || it.unit_price || it.min_price || it.starting_price);
+        const currency = safeText(it.currency || it.preferred_currency || "");
+        const region = safeText(it.region || it.city || it.area_name || it.community);
+        const country = safeText(it.country);
+
+        const img = getImageUrl(it);
+        const coords = getCoords(it);
+
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <img class="thumb" loading="lazy" src="${img}" alt="thumb" />
+          <div class="card-body">
+            <div class="title">${title}</div>
+            <div class="meta" style="margin-bottom:8px">
+              ${developer ? `<span class="chip">المطور: ${developer}</span>` : ""}
+              ${region ? `<span class="chip">${region}</span>` : ""}
+              ${country ? `<span class="chip">${country}</span>` : ""}
+              ${bedrooms ? `<span class="chip">غرف: ${bedrooms}</span>` : ""}
+              ${area ? `<span class="chip">مساحة: ${area}</span>` : ""}
+              ${price ? `<span class="chip">السعر: ${price} ${currency}</span>` : ""}
+            </div>
+            <div class="cta">
+              <a class="btn" ${coords ? `href="${mapLink(coords)}" target="_blank"` : "disabled"}>${coords ? "فتح على الخريطة" : "لا توجد إحداثيات"}</a>
+            </div>
+          </div>
+        `;
+        cards.appendChild(el);
+      });
+    }
+
+    async function runSearch(payload) {
+      cards.innerHTML = "";
+      jsonOut.textContent = "جاري التحميل...";
+      summary.textContent = "—";
+      debugEl.textContent = "";
+
+      const qs = buildParams(payload);
+      const url = `${API_BASE}?${qs}`;
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "X-API-Key": API_KEY, "accept": "application/json" }
+        });
+
+        const text = await res.text();
+        let data; try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+        jsonOut.textContent = JSON.stringify(data, null, 2);
+        debugEl.textContent = `Status: ${res.status} | URL: ${url}`;
+
+        const items = Array.isArray(data.items) ? data.items
+                    : Array.isArray(data.results) ? data.results
+                    : Array.isArray(data.data) ? data.data
+                    : Array.isArray(data.list) ? data.list
+                    : [];
+
+        const pagination = data.pagination || {};
+        const count = items.length;
+        const total = (typeof pagination.total === "number") ? pagination.total : "؟";
+        const page = pagination.page ?? payload.page ?? 1;
+        const pages = pagination.pages ?? "؟";
+        const perPage = pagination.per_page ?? payload.per_page ?? "";
+
+        summary.textContent = `عناصر: ${count} | الإجمالي: ${total} | صفحة: ${page}/${pages} | لكل صفحة: ${perPage}`;
+        renderCards(items);
+      } catch (err) {
+        jsonOut.textContent = "خطأ أثناء الجلب:\n" + err;
+      }
+    }
+
+    // أحداث
+    document.getElementById("toggleRaw").addEventListener("click", ()=> {
+      rawPanel.style.display = rawPanel.style.display === "none" ? "block" : "none";
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const payload = objectFromForm(form);
+      runSearch(payload);
+    });
+
+    quickFillBtn.addEventListener("click", () => {
+      form.reset();
+      form.search_query.value = "Dubai";
+      form.per_page.value = "12";
+      runSearch({ search_query: "Dubai", per_page: "12" });
+    });
+
+    // (ملاحظة: إذا استمر الخطأ 500 ببعض الفلاتر، بدّل runSearch إلى POST كما أعطيتك سابقًا)
+  </script>
+</body>
+</html>
