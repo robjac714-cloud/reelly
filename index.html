@@ -2,415 +2,605 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Reelly Property Search — Cards + Images + Map</title>
+  <title>Creators Media — بحث العقارات</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Leaflet (الخريطة) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
   <style>
     :root{
-      --bg:#0b1020; --card:#11162a; --muted:#8b93a7; --text:#eaf1ff;
-      --accent:#4f86ff; --chip:#1b223d;
+      --bg:#f4f7fc;
+      --panel:#ffffff;
+      --muted:#6c7b95;
+      --text:#14213b;
+      --stroke:#d4e0f5;
+      --chip:#e3f2ff;
+      --accent:#0078b8;
+      --accent-2:#00a4ff;
     }
-    *{box-sizing:border-box}
-    body{ font-family:system-ui,Tahoma,Arial; margin:24px; background:var(--bg); color:var(--text) }
-    a{ color:var(--accent) }
-    h1{ margin:0 0 10px }
-    .wrap{ max-width:1200px; margin:0 auto }
-    form{ background:var(--card); border:1px solid #1d2442; border-radius:16px; padding:16px;
-          display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px 16px }
-    label{ font-size:12px; color:var(--muted); display:block; margin-bottom:6px }
-    input,select{ width:100%; padding:10px 12px; border:1px solid #273057; background:#0f1530; color:var(--text); border-radius:10px }
-    input::placeholder{ color:#66709a }
-    .full{ grid-column:1 / -1 }
-    .actions{ display:flex; gap:10px; margin-top:2px; flex-wrap:wrap }
-    button{ padding:10px 16px; border:0; border-radius:10px; cursor:pointer; background:var(--accent); color:#fff; font-weight:600 }
-    .ghost{ background:#1d2442; color:#cfe1ff }
-    .results{ margin-top:22px }
-    .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px }
-    .card{ border:1px solid #1d2442; background:linear-gradient(180deg,#111936,#0f1530); border-radius:16px; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,.25); display:flex; flex-direction:column }
-    .thumb{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#0c1127 }
-    .card-body{ padding:12px 14px }
-    .title{ font-weight:700; margin:0 0 6px; line-height:1.25 }
-    .meta{ font-size:13px; color:var(--muted); display:flex; flex-wrap:wrap; gap:8px }
-    .chip{ background:var(--chip); border:1px solid #273057; padding:4px 8px; border-radius:999px }
-    .cta{ display:flex; gap:8px; margin-top:12px }
-    .btn{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 12px; border-radius:10px; border:1px solid #29335e; background:#162049; color:#dfe7ff; text-decoration:none }
-    .btn[disabled]{ opacity:.5; cursor:not-allowed }
-    .muted{ color:var(--muted); font-size:12px }
-    .panel{ border:1px solid #1d2442; background:#0f1530; border-radius:12px; padding:10px }
-    pre{ background:#0a0f25; color:#d8e4ff; padding:12px; border-radius:10px; overflow:auto }
-    .head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px }
-    .toggle{ background:#1d2442; border:1px solid #273057; color:#dfe7ff; padding:8px 12px; border-radius:10px; cursor:pointer }
 
-    /* نافذة الخريطة */
-    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:50 }
-    .modal{ width:min(1100px,95vw); height:min(75vh,800px); background:#0f1530; border:1px solid #1d2442; border-radius:16px; overflow:hidden; display:flex; flex-direction:column }
-    .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #1d2442 }
-    #map{ flex:1; width:100% }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:#f2f8ff;
+      color:var(--text);
+      font-family: Inter, "Cairo", system-ui, Tahoma;
+    }
+
+    /* ===== شاشة الترحيب ===== */
+    #splash{
+      position:fixed; inset:0;
+      background:radial-gradient(circle at 50% 50%, #0078b8 0%, #005a86 70%, #02324f 100%);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9999; color:#fff; font-family:"Cairo";
+      animation:fadeOutSplash 1s ease forwards; animation-delay:2.3s;
+    }
+    .splash-inner{ text-align:center }
+    .welcome-text{
+      margin-top:18px; font-size:22px; font-weight:700;
+    }
+    @keyframes fadeOutSplash{
+      to{ opacity:0; visibility:hidden; pointer-events:none; }
+    }
+
+    /* ===== Header ===== */
+    .header{
+      position:sticky; top:0; z-index:40;
+      background:linear-gradient(90deg,#006ba6,#00a3ff);
+      border-bottom:1px solid rgba(255,255,255,.25);
+      color:#fff;
+    }
+    .header-inner{
+      max-width:1400px; margin:0 auto; padding:12px 20px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .brand-text{
+      font-size:16px;
+      font-weight:700;
+      color:#fff;
+      text-shadow:0 1px 2px rgba(0,0,0,.15);
+    }
+
+    /* Layout */
+    .layout{
+      max-width:1400px; margin:18px auto; padding:0 16px;
+      display:grid; grid-template-columns:minmax(320px, 34%) 1fr; gap:18px;
+    }
+    @media (max-width:1024px){ .layout{ grid-template-columns:1fr } }
+
+    .panel{
+      border:1px solid var(--stroke);
+      background:var(--panel);
+      border-radius:18px;
+      box-shadow:0 8px 26px rgba(15,40,80,.08);
+    }
+    .panel-header{
+      padding:10px 14px; border-bottom:1px solid var(--stroke);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .panel-body{ padding:14px }
+
+    /* Map */
+    .map-card{ position:sticky; top:84px; height:calc(100vh - 100px); display:flex; flex-direction:column }
+    #liveMap{ flex:1; width:100%; border-radius:0 0 18px 18px; overflow:hidden }
+    .toolbar{ display:flex; gap:8px; flex-wrap:wrap }
+
+    /* Form */
+    form{
+      display:grid; grid-template-columns:repeat(2, minmax(200px,1fr)); gap:12px 14px;
+    }
+    @media (max-width:720px){ form{ grid-template-columns:1fr } }
+    label{ font-size:12px; color:var(--muted); display:block; margin-bottom:4px }
+    input,select{
+      width:100%; padding:10px 12px; border-radius:12px; color:var(--text);
+      border:1px solid var(--stroke); background:#f8fbff;
+    }
+    .full{ grid-column:1 / -1 }
+    .actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px }
+    button{
+      padding:11px 16px; border-radius:999px; border:0; cursor:pointer;
+      font-weight:700; font-size:13px;
+    }
+    .btn-primary{
+      background:linear-gradient(90deg, var(--accent), var(--accent-2));
+      color:#ffffff;
+    }
+    .btn-ghost{
+      background:#ffffff;
+      color:var(--accent);
+      border:1px solid var(--stroke);
+    }
+
+    /* Chips (عامة) */
+    .chips{
+      display:flex; flex-wrap:wrap; gap:6px; margin-bottom:6px;
+    }
+    .chips button{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background:#ffffff;
+      color:var(--accent);
+      font-size:11px;
+      cursor:pointer;
+    }
+    .chips button.active{
+      background:var(--accent);
+      color:#ffffff;
+      border-color:var(--accent);
+    }
+
+    /* Cards */
+    .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+    .card{
+      border:1px solid var(--stroke);
+      background:#ffffff;
+      border-radius:16px; overflow:hidden;
+      transition:0.2s;
+    }
+    .card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 24px rgba(15,40,80,.15);
+    }
+    .thumb{ width:100%; aspect-ratio:16/10; object-fit:cover; background:#edf3ff }
+
+    .summary{ font-size:13px; color:var(--muted); display:flex; justify-content:space-between }
+
+    .chip{
+      background:var(--chip);
+      padding:6px 10px; border-radius:999px;
+      font-size:12px; margin-left:4px;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="head">
-      <h1>بحث العقارات (Reelly)</h1>
-      <button id="toggleRaw" class="toggle">إظهار/إخفاء JSON</button>
-    </div>
-    <p class="muted">املأ ما يلزم فقط. الحقول المتعددة اكتبها مفصولة بفواصل <code>1,2,3</code>.</p>
 
-    <!-- النموذج -->
-    <form id="searchForm">
-      <div><label>page</label><input type="number" name="page" min="1" placeholder="1"></div>
-      <div><label>per_page (حتى 50)</label><input type="number" name="per_page" min="1" max="50" placeholder="12"></div>
-
-      <div class="full"><label>search_query</label><input type="text" name="search_query" placeholder="Dubai / Marina / Emaar"></div>
-      <div class="full"><label>project_ids</label><input type="text" name="project_ids" placeholder="12,45,99"></div>
-
-      <div><label>country</label><input type="text" name="country" placeholder="UAE"></div>
-      <div><label>region</label><input type="text" name="region" placeholder="Dubai"></div>
-      <div><label>areas</label><input type="text" name="areas" placeholder="101,202"></div>
-
-      <div><label>status</label><input type="text" name="status" placeholder="active,upcoming"></div>
-      <div><label>sale_status</label><input type="text" name="sale_status" placeholder="available,sold_out"></div>
-      <div><label>unit_types</label><input type="text" name="unit_types" placeholder="apartment,villa,studio"></div>
-      <div><label>unit_bedrooms</label><input type="text" name="unit_bedrooms" placeholder="studio,1,2,3"></div>
-
-      <div><label>developer</label><input type="text" name="developer" placeholder="5,9"></div>
-      <div><label>is_partner_project</label>
-        <select name="is_partner_project"><option value="">—</option><option>true</option><option>false</option></select>
-      </div>
-      <div><label>post_handover</label>
-        <select name="post_handover"><option value="">—</option><option>true</option><option>false</option></select>
-      </div>
-      <div><label>has_escrow</label>
-        <select name="has_escrow"><option value="">—</option><option>true</option><option>false</option></select>
-      </div>
-
-      <div><label>unit_price_from</label><input type="number" step="any" name="unit_price_from" placeholder="200000"></div>
-      <div><label>unit_price_to</label><input type="number" step="any" name="unit_price_to" placeholder="1500000"></div>
-      <div><label>price_type</label>
-        <select name="price_type"><option value="">—</option><option>unit</option><option>area</option></select>
-      </div>
-      <div><label>unit_area_from</label><input type="number" step="any" name="unit_area_from" placeholder="500"></div>
-
-      <div class="full"><label>completion_date_ranges</label><input type="text" name="completion_date_ranges" placeholder="2025-2026,2027-2028"></div>
-      <div><label>preferred_currency</label><input type="text" name="preferred_currency" placeholder="AED"></div>
-      <div><label>preferred_area_unit</label><input type="text" name="preferred_area_unit" placeholder="sqft or sqm"></div>
-
-      <div><label>bbox_sw_lat</label><input type="number" step="any" name="bbox_sw_lat"></div>
-      <div><label>bbox_sw_lng</label><input type="number" step="any" name="bbox_sw_lng"></div>
-      <div><label>bbox_ne_lat</label><input type="number" step="any" name="bbox_ne_lat"></div>
-      <div><label>bbox_ne_lng</label><input type="number" step="any" name="bbox_ne_lng"></div>
-
-      <div class="full actions">
-        <button type="submit">بحث</button>
-        <button type="button" id="quickFill" class="ghost">تجربة سريعة</button>
-        <button type="reset" class="ghost">إفراغ</button>
-        <button type="button" id="regionMapSearch" class="ghost">خريطة المنطقة فقط</button>
-      </div>
-    </form>
-
-    <!-- النتائج -->
-    <div class="results">
-      <div class="panel" style="margin:14px 0;">
-        <div id="summary" class="muted">—</div>
-        <div id="debug" class="muted" style="margin-top:6px"></div>
-      </div>
-      <div id="cards" class="grid"></div>
-
-      <div id="rawPanel" class="panel" style="margin-top:16px; display:none;">
-        <h3 style="margin:4px 0 10px">Raw JSON</h3>
-        <pre id="jsonOut">—</pre>
+  <!-- شاشة الترحيب -->
+  <div id="splash">
+    <div class="splash-inner">
+      <div class="welcome-text">
+        Platform by <strong>Creators Media</strong>
       </div>
     </div>
   </div>
 
-  <!-- نافذة الخريطة -->
-  <div class="modal-backdrop" id="mapModal">
-    <div class="modal">
-      <div class="modal-header">
-        <div class="muted" id="mapTitle">خريطة المشاريع</div>
-        <button id="closeMap" class="ghost" style="padding:8px 12px">إغلاق</button>
+  <!-- الهيدر -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand-text">
+        Platform by <strong>Creators Media</strong>
       </div>
-      <div id="map"></div>
+    </div>
+  </div>
+
+  <!-- باقي الصفحة -->
+  <div class="layout">
+
+    <!-- الخريطة -->
+    <div class="panel map-card">
+      <div class="panel-header">
+        <div class="muted">الخريطة الحيّة (من النتائج الحالية)</div>
+        <div class="toolbar">
+          <button class="btn-ghost" id="regionMapBtn">خريطة المنطقة الحالية</button>
+        </div>
+      </div>
+      <div id="liveMap"></div>
+    </div>
+
+    <!-- البحث -->
+    <div class="panel">
+
+      <div class="panel-body">
+        <form id="searchForm">
+          <!-- شيبس الكلمة المفتاحية -->
+          <div class="full">
+            <label>الكلمة المفتاحية</label>
+            <div class="chips search-chips">
+              <button type="button" data-val="Dubai">Dubai</button>
+              <button type="button" data-val="Marina">Marina</button>
+              <button type="button" data-val="Downtown">Downtown</button>
+              <button type="button" data-val="Palm Jumeirah">Palm Jumeirah</button>
+            </div>
+            <input type="text" name="search_query" placeholder="Dubai / Marina">
+          </div>
+
+          <!-- البلد + شيبس للبلد -->
+          <div>
+            <label>البلد</label>
+            <div class="chips country-chips">
+              <button type="button" data-val="UAE">UAE</button>
+              <button type="button" data-val="KSA">KSA</button>
+              <button type="button" data-val="Qatar">Qatar</button>
+            </div>
+            <input type="text" name="country" placeholder="UAE">
+          </div>
+
+          <!-- المنطقة + شيبس للمنطقة -->
+          <div>
+            <label>المنطقة</label>
+            <div class="chips region-chips">
+              <button type="button" data-val="Dubai">Dubai</button>
+              <button type="button" data-val="Abu Dhabi">Abu Dhabi</button>
+              <button type="button" data-val="Sharjah">Sharjah</button>
+              <button type="button" data-val="Ajman">Ajman</button>
+            </div>
+            <input type="text" name="region" placeholder="Dubai">
+          </div>
+
+          <!-- شيبس نطاق السعر -->
+          <div class="full">
+            <label>نطاق السعر (اختصار)</label>
+            <div class="chips price-chips">
+              <button type="button" data-from="" data-to="1000000">أقل من 1M</button>
+              <button type="button" data-from="1000000" data-to="2000000">1M - 2M</button>
+              <button type="button" data-from="2000000" data-to="">أكثر من 2M</button>
+            </div>
+          </div>
+
+          <div>
+            <label>السعر الأدنى</label>
+            <input type="number" name="unit_price_from" placeholder="200000">
+          </div>
+
+          <div>
+            <label>السعر الأعلى</label>
+            <input type="number" name="unit_price_to" placeholder="1500000">
+          </div>
+
+          <!-- شيبس للمساحة -->
+          <div class="full">
+            <label>المساحة (اختصار)</label>
+            <div class="chips area-chips">
+              <button type="button" data-from="0" data-to="500">0–500</button>
+              <button type="button" data-from="500" data-to="1000">500–1000</button>
+              <button type="button" data-from="1000" data-to="1500">1000–1500</button>
+            </div>
+          </div>
+
+          <div>
+            <label>المساحة من</label>
+            <input type="number" name="unit_area_from" placeholder="500">
+          </div>
+
+          <div>
+            <label>المساحة إلى</label>
+            <input type="number" name="unit_area_to" placeholder="1500">
+          </div>
+
+          <!-- المطور + شيبس -->
+          <div class="full">
+            <label>المطور</label>
+            <div class="chips developer-chips">
+              <button type="button" data-val="Emaar">Emaar</button>
+              <button type="button" data-val="DAMAC">DAMAC</button>
+              <button type="button" data-val="Nakheel">Nakheel</button>
+              <button type="button" data-val="Meraas">Meraas</button>
+            </div>
+            <input type="text" name="developer" placeholder="Emaar / DAMAC">
+          </div>
+
+          <!-- عدد الغرف + شيبس -->
+          <div class="full">
+            <label>عدد الغرف</label>
+            <div class="chips bedroom-chips">
+              <button type="button" data-val="studio">استوديو</button>
+              <button type="button" data-val="1">1 غرفة</button>
+              <button type="button" data-val="2">2 غرف</button>
+              <button type="button" data-val="3">3 غرف+</button>
+            </div>
+            <input type="text" name="unit_bedrooms" placeholder="studio,1,2,3">
+          </div>
+
+          <!-- أزرار جاهزة للمشاريع -->
+          <div class="full actions">
+            <button type="submit" class="btn-primary">بحث</button>
+            <button type="button" id="dubaiProjects" class="btn-ghost">مشاريع دبي</button>
+            <button type="button" id="abuDhabiProjects" class="btn-ghost">مشاريع أبوظبي</button>
+            <button type="button" id="sharjahProjects" class="btn-ghost">مشاريع الشارقة</button>
+            <button type="button" id="uaeProjects" class="btn-ghost">مشاريع الإمارات</button>
+            <button type="reset" class="btn-ghost" id="resetBtn">إفراغ</button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- النتائج -->
+      <div class="panel-body" style="border-top:1px solid var(--stroke)">
+        <div class="summary">
+          <div id="summaryText">—</div>
+          <div id="debug"></div>
+        </div>
+
+        <div id="cards" class="grid" style="margin-top:16px"></div>
+      </div>
+
     </div>
   </div>
 
   <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // ====== الإعدادات ======
-    const API_BASE = "https://search-listings-production.up.railway.app/v1/properties";
-    const API_KEY  = "reelly-80fd5f24-WLrF9bAxkGwYrUXFjrIyzNxRlzrB4kpH"; // ← استبدلها بمفتاحك
+    const API_BASE  = "https://search-listings-production.up.railway.app/v1/properties";
+    const API_KEY   = "reelly-80fd5f24-WLrF9bAxkGwYrUXFjrIyzNxRlzrB4kpH";
+    const API_KEY_HEADER = "X-API-Key";
 
-    const form = document.getElementById("searchForm");
-    const cards = document.getElementById("cards");
-    const jsonOut = document.getElementById("jsonOut");
-    const summary = document.getElementById("summary");
-    const debugEl = document.getElementById("debug");
-    const rawPanel = document.getElementById("rawPanel");
+    const form        = document.getElementById("searchForm");
+    const cards       = document.getElementById("cards");
+    const summaryEl   = document.getElementById("summaryText");
+    const debugEl     = document.getElementById("debug");
+    const regionBtn   = document.getElementById("regionMapBtn");
+    const resetBtn    = document.getElementById("resetBtn");
 
-    // سنحتفظ بآخر عناصر رجعت من البحث هنا:
+    const dubaiBtn    = document.getElementById("dubaiProjects");
+    const abuDhabiBtn = document.getElementById("abuDhabiProjects");
+    const sharjahBtn  = document.getElementById("sharjahProjects");
+    const uaeBtn      = document.getElementById("uaeProjects");
+
     let LAST_ITEMS = [];
+    let MAP, MARKERS;
 
-    // ====== Helpers ======
-    function objectFromForm(formEl) {
-      const fd = new FormData(formEl);
-      const obj = {};
-      for (const [k, v] of fd.entries()) if (v.trim() !== "") obj[k] = v.trim();
-      return obj;
+    function objectFromForm(f){
+      const fd = new FormData(f);
+      const o={};
+      for(const [k,v] of fd.entries())
+        if(v.trim()!=="") o[k]=v.trim();
+      return o;
     }
-    function buildParams(dataObj) {
-      const params = new URLSearchParams();
-      Object.entries(dataObj).forEach(([k,v]) => params.append(k,v));
-      return params.toString();
-    }
-    function safeText(v){ return (v===undefined || v===null) ? "" : String(v); }
 
-    // JSON/صور
-    function tryParseJSON(str) {
-      if (typeof str !== "string") return null;
-      const s = str.trim();
-      if (!(s.startsWith("{") || s.startsWith("["))) return null;
-      try { return JSON.parse(s); } catch { return null; }
+    function buildParams(obj){
+      const p=new URLSearchParams();
+      Object.entries(obj).forEach(([k,v])=>p.append(k,v));
+      return p.toString();
     }
-    function isImageUrl(u) {
-      return typeof u === "string"
-        && /^https?:\/\//i.test(u)
-        && (/\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(u) || /image/.test(u));
+
+    function tryParseJSON(s){
+      try{ return JSON.parse(s) }catch{return null}
     }
-    function getImageUrl(it){
-      if (typeof it.cover_image_url === "string") {
-        const parsed = tryParseJSON(it.cover_image_url);
-        if (parsed && typeof parsed === "object") {
-          if (parsed.url && isImageUrl(parsed.url)) return parsed.url;
-          if (parsed.path) return "https://api.reelly.io" + String(parsed.path);
-        }
-        if (isImageUrl(it.cover_image_url)) return it.cover_image_url;
+
+    function isImg(u){
+      return typeof u==="string" && /^https?:\/\//.test(u);
+    }
+
+    function getImage(it){
+      if(typeof it.cover_image_url==="string"){
+        const p = tryParseJSON(it.cover_image_url);
+        if(p?.url) return p.url;
+        if(isImg(it.cover_image_url)) return it.cover_image_url;
       }
-      const cands = [
-        it.image_url, it.image, it.cover_image, it.thumbnail, it.thumb_url,
-        it.photo, it.photo_url, it.picture, it.picture_url,
-        it.banner, it.banner_url,
-        it.images?.[0]?.url, it.images?.[0],
-        it.photos?.[0]?.url, it.photos?.[0],
-        it.media?.images?.[0]?.url, it.gallery?.[0]?.url,
-      ].filter(Boolean);
-      for (const u of cands) if (typeof u === "string" && isImageUrl(u)) return u;
-      return "https://dummyimage.com/800x500/0d122c/ffffff&text=No+Image";
+      return "https://dummyimage.com/800x500/dde8ff/1c3558&text=No+Image";
     }
 
-    // إحداثيات
     function getCoords(it){
-      if (typeof it.coordinates === "string") {
-        const parts = it.coordinates.split(",").map(s => Number(s.trim()));
-        if (parts.length >= 2 && parts.every(Number.isFinite)) {
-          return { lat: parts[0], lng: parts[1] };
-        }
+      if(typeof it.coordinates==="string"){
+        const s = it.coordinates.split(",").map(n=>Number(n.trim()));
+        if(s.length>=2) return {lat:s[0],lng:s[1]};
       }
-      const lat = Number(it.lat ?? it.latitude ?? it.location?.lat ?? it.coordinates?.lat ?? it.coord?.lat ?? it.geo?.lat);
-      const lng = Number(it.lng ?? it.lon ?? it.longitude ?? it.location?.lng ?? it.coordinates?.lng ?? it.coord?.lng ?? it.geo?.lng);
-      if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
       return null;
     }
-    function mapLink({lat,lng}){ return `https://www.google.com/maps?q=${lat},${lng}`; }
 
-    // بطاقات
-    function renderCards(items) {
-      cards.innerHTML = "";
-      if (!Array.isArray(items) || items.length === 0) {
-        cards.innerHTML = "<div class='muted'>لا توجد نتائج.</div>";
+    function renderCards(items){
+      cards.innerHTML="";
+      if(!items.length){
+        cards.innerHTML="<div class='muted'>لا توجد نتائج.</div>";
         return;
       }
-      items.forEach(it => {
-        const title = safeText(it.title || it.name || it.project_name || it.property_name || "بدون اسم");
-        const developer = safeText(it.developer_name || it.developer);
-        const area = safeText(it.area || it.unit_area || it.size);
-        const bedrooms = safeText(it.bedrooms || it.unit_bedrooms);
-        const price = safeText(it.price || it.unit_price || it.min_price || it.starting_price);
-        const currency = safeText(it.currency || it.preferred_currency || "");
-        const region = safeText(it.region || it.city || it.area_name || it.community);
-        const country = safeText(it.country);
 
-        const img = getImageUrl(it);
-        const coords = getCoords(it);
+      items.forEach(it=>{
+        const img = getImage(it);
+        const c   = getCoords(it);
+        const title = it.name || "بدون اسم";
+        const dev   = it.developer || "--";
+        const beds  = it.unit_bedrooms || "";
+        const area  = it.area || it.unit_area || "";
+        const price = it.min_price || it.price || "";
+        const curr  = it.price_currency || "";
 
         const el = document.createElement("div");
-        el.className = "card";
-        el.innerHTML = `
-          <img class="thumb" loading="lazy" src="${img}" alt="thumb" />
+        el.className="card";
+        el.innerHTML=`
+          <img src="${img}" class="thumb">
           <div class="card-body">
             <div class="title">${title}</div>
-            <div class="meta" style="margin-bottom:8px">
-              ${developer ? `<span class="chip">المطور: ${developer}</span>` : ""}
-              ${region ? `<span class="chip">${region}</span>` : ""}
-              ${country ? `<span class="chip">${country}</span>` : ""}
-              ${bedrooms ? `<span class="chip">غرف: ${bedrooms}</span>` : ""}
-              ${area ? `<span class="chip">مساحة: ${area}</span>` : ""}
-              ${price ? `<span class="chip">السعر: ${price} ${currency}</span>` : ""}
-            </div>
-            <div class="cta">
-              <a class="btn" ${coords ? `href="${mapLink(coords)}" target="_blank"` : "disabled"}>${coords ? "فتح على الخريطة" : "لا توجد إحداثيات"}</a>
-            </div>
+
+            <div>
+             <span class="chip">${dev}</span>
+             ${beds ? `<span class="chip">غرف: ${beds}</span>` : ""}
+             ${area ? `<span class="chip">مساحة: ${area}</span>` : ""}
+             ${price? `<span class="chip">${price} ${curr}</span>`:""}
+            </div><br>
+
+            <a
+              ${c? `href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank"`:"disabled"}
+              class="btn-ghost"
+              style="padding:8px 10px; text-align:center; display:block;"
+            >
+              ${c?"فتح على الخريطة":"لا توجد إحداثيات"}
+            </a>
           </div>
         `;
         cards.appendChild(el);
       });
     }
 
-    // بحث (GET) + حفظ النتائج في LAST_ITEMS
-    async function runSearch(payload) {
-      cards.innerHTML = "";
-      jsonOut.textContent = "جاري التحميل...";
-      summary.textContent = "—";
-      debugEl.textContent = "";
+    function initMap(){
+      if(MAP) return;
+      MAP = L.map('liveMap').setView([25.2048,55.2708], 10);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(MAP);
+      MARKERS = L.layerGroup().addTo(MAP);
+    }
 
+    function updateMap(items){
+      initMap();
+      MARKERS.clearLayers();
+      const pts=[];
+      items.forEach(it=>{
+        const c=getCoords(it);
+        if(!c) return;
+        pts.push([c.lat,c.lng]);
+        MARKERS.addLayer(
+          L.marker([c.lat,c.lng]).bindPopup(it.name||"")
+        );
+      });
+
+      if(pts.length) MAP.fitBounds(pts,{padding:[20,20]});
+    }
+
+    async function smartFetch(payload){
       const qs = buildParams(payload);
-      const url = `${API_BASE}?${qs}`;
-      try {
-        const res = await fetch(url, {
-          method: "GET",
-          headers: { "X-API-Key": API_KEY, "accept": "application/json" }
-        });
 
-        const text = await res.text();
-        let data; try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      // 1) GET
+      let url = `${API_BASE}?${qs}`;
+      let r = await fetch(url,{
+        method:"GET",
+        headers:{
+          [API_KEY_HEADER]:API_KEY,
+          accept:"application/json"
+        }
+      });
+      if(r.ok) return {r,url};
 
-        jsonOut.textContent = JSON.stringify(data, null, 2);
-        debugEl.textContent = `Status: ${res.status} | URL: ${url}`;
+      // 2) POST fallback
+      url = API_BASE;
+      r = await fetch(url,{
+        method:"POST",
+        headers:{
+          [API_KEY_HEADER]:API_KEY,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(payload)
+      });
+      if(r.ok) return {r,url};
 
-        const items = Array.isArray(data.items) ? data.items
-                    : Array.isArray(data.results) ? data.results
-                    : Array.isArray(data.data) ? data.data
-                    : Array.isArray(data.list) ? data.list
-                    : [];
+      // 3) Query fallback
+      url = `${API_BASE}?${qs}&api_key=${API_KEY}`;
+      r = await fetch(url);
+      return {r,url};
+    }
 
-        LAST_ITEMS = items; // ← نخزّن آخر نتيجة هنا
+    async function runSearch(payload){
+      summaryEl.textContent="—";
+      cards.innerHTML="";
 
-        const pagination = data.pagination || {};
-        const count = items.length;
-        const total = (typeof pagination.total === "number") ? pagination.total : "؟";
-        const page = pagination.page ?? payload.page ?? 1;
-        const pages = pagination.pages ?? "؟";
-        const perPage = pagination.per_page ?? payload.per_page ?? "";
+      const {r,url} = await smartFetch(payload);
+      const txt = await r.text();
+      let data={}; try{ data=JSON.parse(txt) }catch{}
 
-        summary.textContent = `عناصر: ${count} | الإجمالي: ${total} | صفحة: ${page}/${pages} | لكل صفحة: ${perPage}`;
-        renderCards(items);
-      } catch (err) {
-        jsonOut.textContent = "خطأ أثناء الجلب:\n" + err;
+      debugEl.textContent=`Status: ${r.status}`;
+
+      if(!r.ok){
+        summaryEl.textContent="فشل الجلب";
+        return;
       }
+
+      const items = data.items || data.data || data.results || [];
+      LAST_ITEMS = items;
+
+      summaryEl.textContent=`النتائج: ${items.length}`;
+
+      renderCards(items);
+      updateMap(items);
     }
 
-    // ====== خريطة من JSON الحالي فقط ======
-    let MAP, MARKERS;
-    function openMapFromItems(items, title="خريطة المشاريع") {
-      const points = items.map(it=>{
-        const c = getCoords(it);
-        if (!c) return null;
-        return {
-          ...c,
-          title: safeText(it.name || it.title || "بدون اسم"),
-          area: safeText(it.area),
-          price: safeText(it.min_price ?? it.price),
-          currency: safeText(it.price_currency || it.currency || "")
-        };
-      }).filter(Boolean);
-
-      const mapModal = document.getElementById("mapModal");
-      const mapTitle = document.getElementById("mapTitle");
-      mapTitle.textContent = `${title} — ${points.length} عنصر${points.length!==1?"ًا":""}`;
-      mapModal.style.display = "flex";
-
-      setTimeout(()=>{
-        if (!MAP){
-          MAP = L.map('map', { zoomControl: true, attributionControl: false });
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{ maxZoom:19 }).addTo(MAP);
-          MARKERS = L.layerGroup().addTo(MAP);
-        }
-        MARKERS.clearLayers();
-
-        if (points.length === 0) {
-          MAP.setView([25.2048, 55.2708], 10); // دبي افتراضيًا
-          return;
-        }
-
-        const bounds = [];
-        points.forEach(p=>{
-          const m = L.marker([p.lat, p.lng]).bindPopup(
-            `<b>${p.title}</b><br>${p.area || ""}${(p.area && p.price)?" • ":""}${p.price? (p.price+" "+p.currency):""}<br>
-             <a href="https://www.google.com/maps?q=${p.lat},${p.lng}" target="_blank">فتح في Google Maps</a>`
-          );
-          MARKERS.addLayer(m);
-          bounds.push([p.lat, p.lng]);
-        });
-        MAP.fitBounds(bounds, { padding:[30,30] });
-      },0);
-    }
-
-    // أحداث
-    document.getElementById("toggleRaw").addEventListener("click", ()=> {
-      rawPanel.style.display = rawPanel.style.display === "none" ? "block" : "none";
-    });
-
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", e=>{
       e.preventDefault();
-      const payload = objectFromForm(form);
-      runSearch(payload);
+      runSearch(objectFromForm(form));
     });
 
-    document.getElementById("quickFill").addEventListener("click", () => {
+    resetBtn.addEventListener("click", ()=>{
+      clearAllChipActive();
+      cards.innerHTML="";
+      summaryEl.textContent="—";
+      debugEl.textContent="";
+    });
+
+    regionBtn.addEventListener("click", ()=>{
+      updateMap(LAST_ITEMS);
+    });
+
+    function clearAllChipActive(){
+      document.querySelectorAll(".chips button")
+      .forEach(b=>b.classList.remove("active"));
+    }
+
+    /* ==== شيبس بسيطة (قيمة واحدة) ==== */
+    function bindChipGroup(selector,input){
+      const chips=document.querySelectorAll(selector+" button");
+      chips.forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          chips.forEach(b=>b.classList.remove("active"));
+          btn.classList.add("active");
+          input.value = btn.dataset.val || "";
+          runSearch(objectFromForm(form));
+        });
+      });
+    }
+
+    bindChipGroup(".search-chips",  form.elements["search_query"]);
+    bindChipGroup(".country-chips", form.elements["country"]);
+    bindChipGroup(".region-chips",  form.elements["region"]);
+    bindChipGroup(".developer-chips", form.elements["developer"]);
+    bindChipGroup(".bedroom-chips", form.elements["unit_bedrooms"]);
+
+    /* ==== شيبس السعر (من/إلى) ==== */
+    const priceChips=document.querySelectorAll(".price-chips button");
+    const priceFrom=form.elements["unit_price_from"];
+    const priceTo=form.elements["unit_price_to"];
+    priceChips.forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        priceChips.forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        priceFrom.value = btn.dataset.from || "";
+        priceTo.value   = btn.dataset.to   || "";
+        runSearch(objectFromForm(form));
+      });
+    });
+
+    /* ==== شيبس المساحة (من/إلى) ==== */
+    const areaChips=document.querySelectorAll(".area-chips button");
+    const areaFrom=form.elements["unit_area_from"];
+    const areaTo=form.elements["unit_area_to"];
+    areaChips.forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        areaChips.forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        areaFrom.value = btn.dataset.from || "";
+        areaTo.value   = btn.dataset.to   || "";
+        runSearch(objectFromForm(form));
+      });
+    });
+
+    /* ==== أزرار المشاريع الجاهزة ==== */
+    function presetProjects({country,region,query}){
       form.reset();
-      form.search_query.value = "Dubai";
-      form.per_page.value = "12";
-      runSearch({ search_query: "Dubai", per_page: "12" });
+      clearAllChipActive();
+      if(country) form.elements["country"].value=country;
+      if(region)  form.elements["region"].value=region;
+      if(query)   form.elements["search_query"].value=query;
+      runSearch(objectFromForm(form));
+    }
+
+    dubaiBtn.addEventListener("click", ()=>{
+      presetProjects({country:"UAE",region:"Dubai",query:"Dubai"});
     });
 
-    // زر: خريطة المنطقة فقط (من JSON الحالي)
-  document.getElementById("regionMapSearch").addEventListener("click", ()=>{
-  if (!LAST_ITEMS.length) {
-    alert("أولاً اضغط (بحث) لنجلب النتائج، ثم اعرض الخريطة.");
-    return;
-  }
-
-  const needle = (document.querySelector('input[name="region"]')?.value || "").trim().toLowerCase();
-
-  // 🔎 نجمع كل الحقول المحتملة للنطاق: region / city / area_name / area / community / neighborhood
-  const filtered = LAST_ITEMS.filter(it=>{
-    const haystack = [
-      it.region, it.city, it.area_name, it.area, it.community, it.neighborhood
-    ].filter(Boolean).join(" ").toLowerCase();
-
-    // إذا المستخدم ما كتب شيء، ما منفلتر
-    return needle ? haystack.includes(needle) : true;
-  });
-
-  // 🧭 خذ العناصر اللي فيها إحداثيات فقط
-  const withCoords = (filtered.length ? filtered : LAST_ITEMS)  // fallback إذا الفلترة أعطت 0
-    .filter(it => !!getCoords(it));
-
-  // عنوان مناسب يوضح هل استخدمنا الفلترة أم fallback
-  const title = needle
-    ? (filtered.length ? `خريطة مشاريع ${needle}` : "خريطة المشاريع (كل النتائج الحالية)")
-    : "خريطة المشاريع (النتائج الحالية)";
-
-  openMapFromItems(withCoords, title);
-
-  // ملخص على الصفحة
-  const regionLabel = needle ? ` في ${needle}` : "";
-  summary.textContent = `من النتائج الحالية: ${withCoords.length} مشروعًا مع إحداثيات${regionLabel}.`;
-});
-
-
-    // إغلاق الخريطة
-    document.getElementById("closeMap").addEventListener("click", ()=> {
-      document.getElementById("mapModal").style.display = "none";
+    abuDhabiBtn.addEventListener("click", ()=>{
+      presetProjects({country:"UAE",region:"Abu Dhabi",query:"Abu Dhabi"});
     });
-    document.getElementById("mapModal").addEventListener("click", (e)=> {
-      if (e.target.id === "mapModal") e.currentTarget.style.display = "none";
+
+    sharjahBtn.addEventListener("click", ()=>{
+      presetProjects({country:"UAE",region:"Sharjah",query:"Sharjah"});
     });
+
+    uaeBtn.addEventListener("click", ()=>{
+      presetProjects({country:"UAE",region:"",query:"UAE"});
+    });
+
+    /* تشغيل أولي */
+    runSearch({search_query:"Dubai",per_page:"12"});
   </script>
+
 </body>
 </html>
