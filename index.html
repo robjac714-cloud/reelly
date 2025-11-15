@@ -66,9 +66,14 @@
     /* Layout */
     .layout{
       max-width:1400px; margin:18px auto; padding:0 16px;
-      display:grid; grid-template-columns:minmax(320px, 34%) 1fr; gap:18px;
+      display:grid; grid-template-columns:minmax(320px, 1.1fr) minmax(320px, 0.9fr); gap:18px;
+      align-items:flex-start;
     }
-    @media (max-width:1024px){ .layout{ grid-template-columns:1fr } }
+    @media (max-width:900px){
+      .layout{
+        grid-template-columns:1fr;
+      }
+    }
 
     .panel{
       border:1px solid var(--stroke);
@@ -83,15 +88,41 @@
     .panel-body{ padding:14px }
 
     /* Map */
-    .map-card{ position:sticky; top:84px; height:calc(100vh - 100px); display:flex; flex-direction:column }
-    #liveMap{ flex:1; width:100%; border-radius:0 0 18px 18px; overflow:hidden }
+    .map-card{
+      position:sticky;
+      top:84px;
+      height:calc(100vh - 110px);
+      display:flex;
+      flex-direction:column;
+    }
+    #liveMap{
+      flex:1;
+      width:100%;
+      border-radius:0 0 18px 18px;
+      overflow:hidden;
+    }
     .toolbar{ display:flex; gap:8px; flex-wrap:wrap }
+
+    /* ✅ موبايل: خريطة أصغر وغير لاصقة */
+    @media (max-width:900px){
+      .map-card{
+        position:static;
+        height:auto;
+        margin-top:8px;
+      }
+      #liveMap{
+        height:320px;
+        border-radius:0 0 18px 18px;
+      }
+    }
 
     /* Form */
     form{
       display:grid; grid-template-columns:repeat(2, minmax(200px,1fr)); gap:12px 14px;
     }
-    @media (max-width:720px){ form{ grid-template-columns:1fr } }
+    @media (max-width:720px){
+      form{ grid-template-columns:1fr; }
+    }
     label{ font-size:12px; color:var(--muted); display:block; margin-bottom:4px }
     input,select{
       width:100%; padding:10px 12px; border-radius:12px; color:var(--text);
@@ -178,22 +209,11 @@
   <!-- باقي الصفحة -->
   <div class="layout">
 
-    <!-- الخريطة -->
-    <div class="panel map-card">
-      <div class="panel-header">
-        <div class="muted">الخريطة الحيّة (من النتائج الحالية)</div>
-        <div class="toolbar">
-          <button class="btn-ghost" id="regionMapBtn">خريطة المنطقة الحالية</button>
-        </div>
-      </div>
-      <div id="liveMap"></div>
-    </div>
-
-    <!-- البحث -->
+    <!-- ✅ البحث أولاً (حتى بالموبايل يطلع فوق) -->
     <div class="panel">
-
       <div class="panel-body">
         <form id="searchForm">
+
           <!-- شيبس الكلمة المفتاحية -->
           <div class="full">
             <label>الكلمة المفتاحية</label>
@@ -315,8 +335,19 @@
 
         <div id="cards" class="grid" style="margin-top:16px"></div>
       </div>
-
     </div>
+
+    <!-- ✅ الخريطة صارت العمود التاني -->
+    <div class="panel map-card">
+      <div class="panel-header">
+        <div class="muted">الخريطة الحيّة (من النتائج الحالية)</div>
+        <div class="toolbar">
+          <button class="btn-ghost" id="regionMapBtn">خريطة المنطقة الحالية</button>
+        </div>
+      </div>
+      <div id="liveMap"></div>
+    </div>
+
   </div>
 
   <!-- Leaflet JS -->
