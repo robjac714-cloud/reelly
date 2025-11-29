@@ -29,6 +29,22 @@
       background:radial-gradient(circle at top, #111936 0, #050816 55%);
       color:var(--text);
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma;
+      position:relative;
+      overflow-x:hidden;
+    }
+
+    /* خلفية اللوغو (ووترمارك) */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at top, rgba(17,25,54,0.75) 0, rgba(5,8,22,1) 55%),
+        url("creatorsmedia-logo.png") center/420px no-repeat;
+      opacity:0.04;
+      pointer-events:none;
+      z-index:-1;
+      mix-blend-mode:screen;
     }
 
     /* ===== Header ===== */
@@ -45,6 +61,12 @@
     .brand{
       display:flex; align-items:center; gap:8px;
     }
+    .brand-logo{
+      width:28px; height:28px;
+      border-radius:999px;
+      object-fit:contain;
+      background:transparent;
+    }
     .brand-pill{
       width:26px; height:26px; border-radius:999px;
       background:radial-gradient(circle at 30% 30%, #6ecbff, #4f86ff);
@@ -57,24 +79,6 @@
     }
     .brand-sub{
       font-size:11px; color:var(--muted);
-    }
-    .nav-tabs{
-      display:flex; gap:6px; flex-wrap:wrap;
-    }
-    .nav-btn{
-      padding:7px 14px;
-      border-radius:999px;
-      border:1px solid transparent;
-      background:transparent;
-      color:var(--muted);
-      font-size:12px;
-      cursor:pointer;
-      display:flex; align-items:center; gap:4px;
-    }
-    .nav-btn.active{
-      color:#fff;
-      border-color:var(--accent);
-      background:radial-gradient(circle at 0 0,#4f86ff33,#111936);
     }
 
     /* ===== Views ===== */
@@ -159,6 +163,20 @@
     .panel-body{ padding:14px; }
 
     .muted{ color:var(--muted); font-size:12px; }
+
+    /* زر الرجوع */
+    .back-btn{
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid #29335e;
+      background:transparent;
+      color:var(--accent-2);
+      font-size:11px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:4px;
+    }
 
     /* ===== Search Layout (بدون خريطة) ===== */
     .layout-search{
@@ -338,14 +356,15 @@
   <header class="header">
     <div class="header-inner">
       <div class="brand">
+        <!-- غيّر رابط الصورة حسب مكان اللوغو عندك -->
+        <img src="creatorsmedia-logo.png" alt="Creators Media Logo" class="brand-logo" />
         <div class="brand-pill">CM</div>
         <div>
           <div class="brand-title">Creators Media</div>
+          <div class="brand-sub">منصة عقارات</div>
         </div>
       </div>
-      <nav class="nav-tabs">
-        <button class="nav-btn active" data-view="landingView">الرئيسية</button>
-      </nav>
+      <!-- ما في أزرار فوق الآن -->
     </div>
   </header>
 
@@ -353,7 +372,7 @@
   <main id="landingView" class="view active">
     <section class="landing">
       <div class="hero">
-        <div class="hero-title">منصة عقارات</div>
+        <div class="hero-title">منصة عقارات - Creators Media</div>
         <div class="hero-sub">
           اختر ما تريد فعله: بحث مشروع معيّن عن طريق الفلاتر، عرض خرائط مشاريع دبي، أو استكشاف المطورين والوحدات المتاحة وخطط الدفع.
         </div>
@@ -446,7 +465,10 @@
     <section class="layout layout-search">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">بحث مشروع</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-weight:800;">بحث مشروع</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
           <div class="muted">استخدم الفلاتر لتصفية المشاريع ثم استعرضها على شكل كروت.</div>
         </div>
         <div class="panel-body">
@@ -575,7 +597,10 @@
     <section class="layout dubai-layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">خرائط مشاريع دبي</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-weight:800;">خرائط مشاريع دبي</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
           <div class="muted">اضغط على زر التحميل لجلب المشاريع من Reelly وإظهارها على الخريطة.</div>
         </div>
         <div class="panel-body">
@@ -589,7 +614,10 @@
 
       <div class="panel">
         <div class="panel-header">
-          <div class="muted">قائمة المشاريع</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="muted">قائمة المشاريع</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
         </div>
         <div class="panel-body">
           <div id="dubaiList" class="empty">لم يتم جلب المشاريع بعد.</div>
@@ -603,7 +631,10 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">قائمة المطورين</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-weight:800;">قائمة المطورين</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
           <div class="muted">يتم استخراج أسماء المطورين من المشاريع الراجعة من Reelly.</div>
         </div>
         <div class="panel-body">
@@ -618,7 +649,10 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">الوحدات المتاحة الآن</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-weight:800;">الوحدات المتاحة الآن</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
           <div class="muted">قائمة بالمشاريع التي حالتها متاحة (قد تحتاج تعديل البارامترات حسب توثيق Reelly).</div>
         </div>
         <div class="panel-body">
@@ -633,7 +667,10 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">خطط الدفع</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-weight:800;">خطط الدفع</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
           <div class="muted">فلترة حسب وجود خطة دفع بعد التسليم (post_handover) أو غير ذلك.</div>
         </div>
         <div class="panel-body">
@@ -652,7 +689,10 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">المشاريع حسب المنطقة</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-weight:800;">المشاريع حسب المنطقة</div>
+            <button type="button" class="back-btn back-home">← رجوع للرئيسية</button>
+          </div>
           <div class="muted">اختر منطقة لعرض المشاريع المتعلقة بها.</div>
         </div>
         <div class="panel-body">
@@ -688,14 +728,10 @@
       paymentPlansView: document.getElementById("paymentPlansView"),
       areaProjectsView: document.getElementById("areaProjectsView")
     };
-    const navButtons = document.querySelectorAll(".nav-btn");
 
     function showView(id){
       Object.entries(views).forEach(([key,el])=>{
         el.classList.toggle("active", key === id);
-      });
-      navButtons.forEach(btn=>{
-        btn.classList.toggle("active", btn.dataset.view === id);
       });
 
       // استدعاء تحميلات خاصة لبعض الصفحات
@@ -710,8 +746,11 @@
       }
     }
 
-    navButtons.forEach(btn=>{
-      btn.addEventListener("click", ()=>showView(btn.dataset.view));
+    // زر الرجوع للرئيسية في كل الصفحات
+    document.addEventListener("click", e=>{
+      if(e.target.classList.contains("back-home")){
+        showView("landingView");
+      }
     });
 
     // كروت الرئيسية
