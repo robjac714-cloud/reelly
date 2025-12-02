@@ -2,31 +2,32 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Creators Media — منصة العقارات</title>
+  <title>Creators Media</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 
   <!-- Leaflet (للخريطة تبع دبي) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
     :root{
-      --bg:#050816;
-      --panel:#0b1020;
-      --panel-soft:#11162a;
-      --muted:#8b93a7;
-      --text:#eaf1ff;
-      --stroke:#1f2644;
-      --chip:#18223b;
-      --accent:#4f86ff;
-      --accent-2:#6ecbff;
-      --danger:#ff4f6a;
+      --bg:#f5f5f7;
+      --panel:#ffffff;
+      --panel-soft:#fafafa;
+      --muted:#6b7280;
+      --text:#111827;
+      --stroke:#e5e7eb;
+      --chip:#f3f4f6;
+      --accent:#2563eb;
+      --accent-2:#0ea5e9;
+      --danger:#ef4444;
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      background:radial-gradient(circle at top, #111936 0, #050816 55%);
+      background:var(--bg);
       color:var(--text);
       font-family: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma;
       position:relative;
@@ -39,65 +40,61 @@
       position:fixed;
       inset:0;
       background:
-        radial-gradient(circle at top, rgba(17,25,54,0.75) 0, rgba(5,8,22,1) 55%),
-        url("creatorsmedia-logo.png") center/420px no-repeat;
-      opacity:0.04;
+        radial-gradient(circle at top, rgba(209,213,219,0.7) 0, rgba(245,245,247,1) 55%),
+        url("creatorsmedia-logo.png") center/380px no-repeat;
+      opacity:0.06;
       pointer-events:none;
       z-index:-1;
-      mix-blend-mode:screen;
+      mix-blend-mode:normal;
     }
 
     /* ===== Header ===== */
     .header{
       position:sticky; top:0; z-index:40;
-      background:linear-gradient(90deg,#050816,#111936);
-      border-bottom:1px solid rgba(255,255,255,.06);
-      backdrop-filter: blur(10px);
+      background:linear-gradient(90deg,#ffffff,#f9fafb);
+      border-bottom:1px solid rgba(209,213,219,.9);
+      backdrop-filter: blur(8px);
     }
     .header-inner{
       max-width:1400px; margin:0 auto; padding:10px 18px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      display:flex; align-items:center; justify-content:flex-start; gap:10px;
     }
     .brand{
       display:flex; align-items:center; gap:8px;
     }
     .brand-logo{
-      width:28px; height:28px;
+      width:100px; height:50px;
       border-radius:999px;
       object-fit:contain;
       background:transparent;
+      margin:50;
     }
     .brand-pill{
-      width:26px; height:26px; border-radius:999px;
-      background:radial-gradient(circle at 30% 30%, #6ecbff, #4f86ff);
+      width:28px; height:28px; border-radius:999px;
+      background:radial-gradient(circle at 30% 30%, #0ea5e9, #2563eb);
       display:grid; place-items:center;
       font-weight:800; font-size:13px;
       color:#fff;
     }
     .brand-title{
-      font-weight:800; font-size:15px;
+      font-weight:800; font-size:15px; color:#111827;
     }
     .brand-sub{
       font-size:11px; color:var(--muted);
     }
-    .nav-tabs{
-      display:flex; gap:6px; flex-wrap:wrap;
-    }
-    .nav-btn{
+
+    /* زر رجوع */
+    .back-btn{
       padding:7px 14px;
       border-radius:999px;
-      border:1px solid transparent;
-      background:transparent;
-      color:var(--muted);
-      font-size:12px;
+      border:1px solid #d1d5db;
+      background:#ffffff;
+      color:#2563eb;
+      font-size:11px;
       cursor:pointer;
-      display:flex; align-items:center; gap:4px;
+      display:flex; align-items:center; gap:6px;
       white-space:nowrap;
-    }
-    .nav-btn.active{
-      color:#fff;
-      border-color:var(--accent);
-      background:radial-gradient(circle at 0 0,#4f86ff33,#111936);
+      box-shadow:0 1px 2px rgba(15,23,42,0.04);
     }
 
     /* ===== Views ===== */
@@ -114,14 +111,14 @@
       gap:14px;
     }
     .hero{
-      background:radial-gradient(circle at 0 0,#4f86ff55,#111936);
+      background:linear-gradient(135deg,#e0f2fe,#eff6ff);
       border-radius:22px;
       padding:22px 22px 26px;
-      border:1px solid #29335e;
-      box-shadow:0 20px 50px rgba(0,0,0,.45);
+      border:1px solid #dbeafe;
+      box-shadow:0 16px 35px rgba(15,23,42,0.06);
     }
     .hero-title{
-      font-size:22px; font-weight:900; margin-bottom:6px;
+      font-size:22px; font-weight:900; margin-bottom:6px; color:#0f172a;
     }
     .hero-sub{
       font-size:13px; color:var(--muted); max-width:640px;
@@ -136,15 +133,15 @@
       border-radius:18px;
       padding:16px 16px 14px;
       border:1px solid var(--stroke);
-      box-shadow:0 16px 40px rgba(0,0,0,.65);
+      box-shadow:0 10px 30px rgba(15,23,42,0.04);
       display:flex; flex-direction:column; gap:8px;
       cursor:pointer;
       transition:.18s;
     }
     .option-card:hover{
-      transform:translateY(-3px);
-      box-shadow:0 22px 55px rgba(0,0,0,.85);
-      border-color:var(--accent);
+      transform:translateY(-2px);
+      box-shadow:0 16px 40px rgba(15,23,42,0.08);
+      border-color:#bfdbfe;
     }
     .option-top{
       display:flex; align-items:center; justify-content:space-between;
@@ -153,14 +150,15 @@
     .option-icon{
       width:42px; height:42px;
       border-radius:14px;
-      background:radial-gradient(circle at 30% 30%, #6ecbff,#4f86ff);
+      background:radial-gradient(circle at 30% 30%, #0ea5e9,#2563eb);
       display:grid; place-items:center;
       font-size:20px;
+      color:#f9fafb;
     }
-    .option-title{ font-weight:800; font-size:15px; }
+    .option-title{ font-weight:800; font-size:15px; color:#111827; }
     .option-desc{ font-size:12px; color:var(--muted); }
     .option-cta{
-      font-size:12px; color:var(--accent-2); font-weight:700;
+      font-size:12px; color:#2563eb; font-weight:700;
       display:flex; align-items:center; justify-content:flex-end; gap:4px;
     }
 
@@ -172,12 +170,17 @@
       border:1px solid var(--stroke);
       background:var(--panel-soft);
       border-radius:18px;
-      box-shadow:0 14px 40px rgba(0,0,0,.7);
+      box-shadow:0 16px 40px rgba(15,23,42,0.05);
     }
     .panel-header{
       padding:10px 14px;
       border-bottom:1px solid var(--stroke);
       display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background:#ffffff;
+      border-radius:18px 18px 0 0;
+    }
+    .panel-header-left{
+      display:flex; flex-direction:column; gap:2px;
     }
     .panel-body{ padding:14px; }
 
@@ -209,12 +212,13 @@
       width:100%;
       padding:9px 11px;
       border-radius:11px;
-      border:1px solid #273057;
-      background:#0c1224;
+      border:1px solid #d1d5db;
+      background:#ffffff;
       color:var(--text);
       font-size:13px;
+      box-shadow:0 1px 2px rgba(15,23,42,0.02) inset;
     }
-    input::placeholder{ color:#66709a; }
+    input::placeholder{ color:#9ca3af; }
     .full{ grid-column:1 / -1; }
     .actions{
       display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;
@@ -230,11 +234,13 @@
     .btn-primary{
       background:linear-gradient(90deg,var(--accent),var(--accent-2));
       color:#fff;
+      box-shadow:0 8px 18px rgba(37,99,235,0.25);
     }
     .btn-ghost{
-      background:transparent;
-      color:var(--accent-2);
-      border:1px solid #29335e;
+      background:#ffffff;
+      color:#2563eb;
+      border:1px solid #d1d5db;
+      box-shadow:0 1px 2px rgba(15,23,42,0.04);
     }
 
     /* Chips */
@@ -245,15 +251,15 @@
       padding:5px 9px;
       border-radius:999px;
       background:var(--chip);
-      border:1px solid #273057;
+      border:1px solid #e5e7eb;
       color:var(--muted);
       font-size:11px;
       cursor:pointer;
     }
     .chips button.active{
-      color:#fff;
+      color:#f9fafb;
       border-color:var(--accent);
-      background:linear-gradient(120deg,#4f86ff,#6ecbff);
+      background:linear-gradient(120deg,#2563eb,#0ea5e9);
     }
 
     /* Results Cards */
@@ -267,36 +273,38 @@
       margin-top:14px;
     }
     .card{
-      background:#0c1224;
+      background:#ffffff;
       border-radius:14px;
-      border:1px solid #232a47;
+      border:1px solid #e5e7eb;
       overflow:hidden;
       transition:.16s;
+      box-shadow:0 10px 25px rgba(15,23,42,0.04);
     }
     .card:hover{
       transform:translateY(-2px);
-      box-shadow:0 14px 32px rgba(0,0,0,.75);
-      border-color:var(--accent);
+      box-shadow:0 16px 35px rgba(15,23,42,0.08);
+      border-color:#bfdbfe;
     }
     .thumb{
       width:100%;
       aspect-ratio:16/10;
       object-fit:cover;
-      background:#060814;
+      background:#e5e7eb;
     }
     .card-body{ padding:10px 12px 12px; }
     .card-title{
-      font-weight:800; font-size:14px; margin-bottom:4px;
+      font-weight:800; font-size:14px; margin-bottom:4px; color:#111827;
     }
     .chips-line{
       display:flex; flex-wrap:wrap; gap:4px;
     }
     .chip-pill{
-      background:#151a32;
+      background:#f3f4f6;
       border-radius:999px;
       padding:3px 7px;
       font-size:11px;
       color:var(--muted);
+      border:1px solid #e5e7eb;
     }
     .map-link{
       margin-top:8px;
@@ -305,9 +313,10 @@
       display:block;
       padding:6px 8px;
       border-radius:999px;
-      border:1px solid #273057;
-      color:var(--accent-2);
+      border:1px solid #d1d5db;
+      color:#2563eb;
       text-decoration:none;
+      background:#f9fafb;
     }
 
     .empty{
@@ -315,8 +324,8 @@
       text-align:center;
       color:var(--muted);
       border-radius:14px;
-      border:1px dashed #273057;
-      background:#080c18;
+      border:1px dashed #e5e7eb;
+      background:#f9fafb;
       font-size:13px;
     }
 
@@ -336,22 +345,23 @@
       height:420px;
       border-radius:0 0 18px 18px;
       overflow:hidden;
+      background:#e5e7eb;
     }
     @media (max-width:768px){
       #dubaiMap{ height:320px; }
     }
     .dev-item{
       padding:8px 0;
-      border-bottom:1px dashed #232a47;
+      border-bottom:1px dashed #e5e7eb;
     }
     .dev-title{
-      font-weight:700; font-size:13px;
+      font-weight:700; font-size:13px; color:#111827;
     }
     .dev-sub{
       font-size:11px; color:var(--muted);
     }
     .dev-link{
-      font-size:11px; color:var(--accent-2); text-decoration:none;
+      font-size:11px; color:#2563eb; text-decoration:none;
     }
   </style>
 </head>
@@ -361,23 +371,12 @@
   <header class="header">
     <div class="header-inner">
       <div class="brand">
-        <!-- غيّر رابط الصورة حسب مكان اللوغو عندك -->
-        <img src="creatorsmedia-logo.png" alt="Creators Media Logo" class="brand-logo" />
-        <div class="brand-pill">CM</div>
+        <img src="creatorsmedia-logo.png" alt="" class="brand-logo" />
         <div>
           <div class="brand-title">Creators Media</div>
-          <div class="brand-sub">منصة عقارات</div>
         </div>
       </div>
-      <nav class="nav-tabs">
-        <button class="nav-btn active" data-view="landingView">الرئيسية</button>
-        <button class="nav-btn" data-view="searchView">بحث مشروع</button>
-        <button class="nav-btn" data-view="dubaiMapView">خرائط دبي</button>
-        <button class="nav-btn" data-view="developersView">المطورين</button>
-        <button class="nav-btn" data-view="availableUnitsView">الوحدات المتاحة</button>
-        <button class="nav-btn" data-view="paymentPlansView">خطط الدفع</button>
-        <button class="nav-btn" data-view="areaProjectsView">حسب المنطقة</button>
-      </nav>
+      <!-- بدون تابّات -->
     </div>
   </header>
 
@@ -385,7 +384,7 @@
   <main id="landingView" class="view active">
     <section class="landing">
       <div class="hero">
-        <div class="hero-title">منصة عقارات - Creators Media</div>
+        <div class="hero-title">منصة عقارات </div>
         <div class="hero-sub">
           اختر ما تريد فعله: بحث مشروع معيّن عن طريق الفلاتر، عرض خرائط مشاريع دبي، أو استكشاف المطورين والوحدات المتاحة وخطط الدفع.
         </div>
@@ -478,8 +477,13 @@
     <section class="layout layout-search">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">بحث مشروع</div>
-          <div class="muted">استخدم الفلاتر لتصفية المشاريع ثم استعرضها على شكل كروت.</div>
+          <div class="panel-header-left">
+            <div style="font-weight:800;">بحث مشروع</div>
+            <div class="muted">استخدم الفلاتر لتصفية المشاريع ثم استعرضها على شكل كروت.</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <form id="searchForm">
@@ -607,8 +611,13 @@
     <section class="layout dubai-layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">خرائط مشاريع دبي</div>
-          <div class="muted">اضغط على زر التحميل لجلب المشاريع من Reelly وإظهارها على الخريطة.</div>
+          <div class="panel-header-left">
+            <div style="font-weight:800;">خرائط مشاريع دبي</div>
+            <div class="muted">اضغط على زر التحميل لجلب المشاريع من Reelly وإظهارها على الخريطة.</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <div style="margin-bottom:10px; display:flex; gap:8px; flex-wrap:wrap;">
@@ -621,7 +630,12 @@
 
       <div class="panel">
         <div class="panel-header">
-          <div class="muted">قائمة المشاريع</div>
+          <div class="panel-header-left">
+            <div class="muted">قائمة المشاريع</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <div id="dubaiList" class="empty">لم يتم جلب المشاريع بعد.</div>
@@ -635,8 +649,13 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">قائمة المطورين</div>
-          <div class="muted">يتم استخراج أسماء المطورين من المشاريع الراجعة من Reelly.</div>
+          <div class="panel-header-left">
+            <div style="font-weight:800;">قائمة المطورين</div>
+            <div class="muted">يتم استخراج أسماء المطورين من المشاريع الراجعة من Reelly.</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <div id="developersList" class="grid"></div>
@@ -650,8 +669,13 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">الوحدات المتاحة الآن</div>
-          <div class="muted">قائمة بالمشاريع التي حالتها متاحة (قد تحتاج تعديل البارامترات حسب توثيق Reelly).</div>
+          <div class="panel-header-left">
+            <div style="font-weight:800;">الوحدات المتاحة الآن</div>
+            <div class="muted">قائمة بالمشاريع التي حالتها متاحة (قد تحتاج تعديل البارامترات حسب توثيق Reelly).</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <div id="availableUnitsList" class="grid"></div>
@@ -665,8 +689,13 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">خطط الدفع</div>
-          <div class="muted">فلترة حسب وجود خطة دفع بعد التسليم (post_handover) أو غير ذلك.</div>
+          <div class="panel-header-left">
+            <div style="font-weight:800;">خطط الدفع</div>
+            <div class="muted">فلترة حسب وجود خطة دفع بعد التسليم (post_handover) أو غير ذلك.</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <div class="chips plan-chips" style="margin-bottom:10px;">
@@ -684,8 +713,13 @@
     <section class="layout">
       <div class="panel">
         <div class="panel-header">
-          <div style="font-weight:800;">المشاريع حسب المنطقة</div>
-          <div class="muted">اختر منطقة لعرض المشاريع المتعلقة بها.</div>
+          <div class="panel-header-left">
+            <div style="font-weight:800;">المشاريع حسب المنطقة</div>
+            <div class="muted">اختر منطقة لعرض المشاريع المتعلقة بها.</div>
+          </div>
+          <button class="back-btn back-to-home">
+            <span>←</span><span>رجوع للرئيسية</span>
+          </button>
         </div>
         <div class="panel-body">
           <div class="chips area-selector" style="margin-bottom:10px;">
@@ -720,17 +754,12 @@
       paymentPlansView: document.getElementById("paymentPlansView"),
       areaProjectsView: document.getElementById("areaProjectsView")
     };
-    const navButtons = document.querySelectorAll(".nav-btn");
 
     function showView(id){
       Object.entries(views).forEach(([key,el])=>{
         el.classList.toggle("active", key === id);
       });
-      navButtons.forEach(btn=>{
-        btn.classList.toggle("active", btn.dataset.view === id);
-      });
 
-      // استدعاء تحميلات خاصة لبعض الصفحات
       if(id === "dubaiMapView" && DUBAI_MAP){
         setTimeout(()=>DUBAI_MAP.invalidateSize(), 200);
       }
@@ -741,10 +770,6 @@
         loadAvailableUnits();
       }
     }
-
-    navButtons.forEach(btn=>{
-      btn.addEventListener("click", ()=>showView(btn.dataset.view));
-    });
 
     // كروت الرئيسية
     document.getElementById("cardSearch").addEventListener("click", ()=>{
@@ -764,6 +789,11 @@
     });
     document.getElementById("cardAreaProjects").addEventListener("click", ()=>{
       showView("areaProjectsView");
+    });
+
+    // زر رجوع للرئيسية في كل الصفحات
+    document.querySelectorAll(".back-to-home").forEach(btn=>{
+      btn.addEventListener("click", ()=>showView("landingView"));
     });
 
     // ===== عناصر البحث =====
@@ -853,7 +883,7 @@
         if(p?.url) return p.url;
         if(isImg(it.cover_image_url)) return it.cover_image_url;
       }
-      return "https://dummyimage.com/800x500/0d122c/ffffff&text=No+Image";
+      return "https://dummyimage.com/800x500/e5e7eb/111827&text=No+Image";
     }
     function getCoords(it){
       if(typeof it.coordinates==="string"){
@@ -895,7 +925,7 @@
             ${
               c
               ? `<a class="map-link" href="https://maps.google.com/?q=${c.lat},${c.lng}" target="_blank">فتح على الخريطة</a>`
-              : `<div class="map-link" style="opacity:.5; cursor:default;">لا توجد إحداثيات</div>`
+              : `<div class="map-link" style="opacity:.6; cursor:default; pointer-events:none; background:#f3f4f6;">لا توجد إحداثيات</div>`
             }
           </div>
         `;
@@ -1119,7 +1149,7 @@
       btn.addEventListener("click", async ()=>{
         planChips.forEach(b=>b.classList.remove("active"));
         btn.classList.add("active");
-        const ph = btn.dataset.ph; // "true" أو "false"
+        const ph = btn.dataset.ph;
         const containerId = "paymentPlansResults";
         document.getElementById(containerId).innerHTML="<div class='empty'>جاري جلب المشاريع حسب خطة الدفع...</div>";
 
